@@ -1,0 +1,41 @@
+{
+    "sites": [
+      {
+        "name": "Indeed",
+        "url": "https://www.indeed.com/jobs?q=software+engineer&l=remote",
+        "type": "indeed",
+        "selector": ".job_seen_beacon"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/jobs/search/?keywords=software%20engineer&location=Remote",
+        "type": "linkedin",
+        "selector": ".job-search-card"
+      }
+    ],
+    "resume_keywords": [
+    ],
+    "location": {
+      "global": true,
+      "countries": ["US", "CA", "GB", "DE", "NL"],
+      "cities": ["San Francisco", "New York", "Toronto", "London", "Berlin"],
+      "remote": {
+        "accept": true,
+        "required": false,
+        "hybrid": true
+      },
+      "exclude_countries": []
+    },
+    "email": {
+      "enabled": false,
+      "smtp_host": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "your-email@gmail.com",
+      "password": "your-app-password",
+      "to": "your-email@gmail.com",
+      "from": "your-email@gmail.com"
+    },
+    "min_relevance_score": 0.3,
+    "seen_jobs_path": "seen_jobs.json",
+    "resume_path": "resume.pdf"
+  } 

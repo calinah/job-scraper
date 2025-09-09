@@ -135,52 +135,6 @@ Start by implementing the configuration system:
    - Search for these in resume text
    - Combine with manual keywords
 
-## Key Learning Concepts
-
-### Go Interfaces
-```go
-type Scraper interface {
-    ScrapeSite(ctx context.Context, site config.Site) (*models.ScrapingResult, error)
-}
-```
-
-### Error Handling
-```go
-func LoadConfig(path string) (*Config, error) {
-    data, err := os.ReadFile(path)
-    if err != nil {
-        return nil, fmt.Errorf("failed to read config: %w", err)
-    }
-    // ... rest of implementation
-}
-```
-
-### JSON Marshaling
-```go
-func SaveConfig(config *Config, path string) error {
-    data, err := json.MarshalIndent(config, "", "  ")
-    if err != nil {
-        return err
-    }
-    return os.WriteFile(path, data, 0644)
-}
-```
-
-### HTTP Client Usage
-```go
-import "github.com/gocolly/colly/v2"
-
-func (js *JobScraper) ScrapeSite(ctx context.Context, site config.Site) (*models.ScrapingResult, error) {
-    c := colly.NewCollector()
-    
-    c.OnHTML(site.Selector, func(e *colly.HTMLElement) {
-        // Extract job data here
-    })
-    
-    return c.Visit(site.URL)
-}
-```
-
 ## Configuration
 
 Edit `config.json` to customize:
@@ -250,14 +204,6 @@ The `location` section in `config.json` supports:
 5. **Add notifications**: Email or console output
 6. **Improve and expand**: Add more sites, better parsing, etc.
 
-## Tips for Learning
-
-- **Read the TODO comments**: Each function has detailed implementation hints
-- **Start small**: Implement one component at a time
-- **Test frequently**: Use `go test` to verify your implementations
-- **Use Go documentation**: Refer to the official Go docs and package documentation
-- **Practice error handling**: Always check and handle errors properly
-- **Use interfaces**: They make your code more testable and flexible
 
 ## Dependencies
 
