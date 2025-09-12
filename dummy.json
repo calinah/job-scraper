@@ -1,41 +1,121 @@
 {
-    "sites": [
-      {
-        "name": "Indeed",
-        "url": "https://www.indeed.com/jobs?q=software+engineer&l=remote",
-        "type": "indeed",
-        "selector": ".job_seen_beacon"
-      },
-      {
-        "name": "LinkedIn",
-        "url": "https://www.linkedin.com/jobs/search/?keywords=software%20engineer&location=Remote",
-        "type": "linkedin",
-        "selector": ".job-search-card"
-      }
-    ],
-    "resume_keywords": [
-    ],
-    "location": {
-      "global": true,
-      "countries": ["US", "CA", "GB", "DE", "NL"],
-      "cities": ["San Francisco", "New York", "Toronto", "London", "Berlin"],
-      "remote": {
-        "accept": true,
-        "required": false,
-        "hybrid": true
-      },
-      "exclude_countries": []
+  "sites": [
+    {
+      "name": "LinkedIn - System Engineering",
+      "url": "https://www.linkedin.com/jobs/search/?keywords=system%20engineer%20OR%20devops%20OR%20cloud%20engineer%20OR%20sre%20OR%20platform%20engineer&location=Remote",
+      "type": "linkedin",
+      "selector": ".job-search-card"
     },
-    "email": {
-      "enabled": false,
-      "smtp_host": "smtp.gmail.com",
-      "smtp_port": 587,
-      "username": "your-email@gmail.com",
-      "password": "your-app-password",
-      "to": "your-email@gmail.com",
-      "from": "your-email@gmail.com"
+    {
+      "name": "LinkedIn - DevOps",
+      "url": "https://www.linkedin.com/jobs/search/?keywords=devops%20engineer%20OR%20site%20reliability%20engineer%20OR%20infrastructure%20engineer&location=Remote",
+      "type": "linkedin",
+      "selector": ".job-search-card"
     },
-    "min_relevance_score": 0.3,
-    "seen_jobs_path": "seen_jobs.json",
-    "resume_path": "resume.pdf"
-  } 
+    {
+      "name": "LinkedIn - Cloud Engineering",
+      "url": "https://www.linkedin.com/jobs/search/?keywords=cloud%20engineer%20OR%20aws%20engineer%20OR%20azure%20engineer%20OR%20gcp%20engineer&location=Remote",
+      "type": "linkedin",
+      "selector": ".job-search-card"
+    }
+  ],
+  
+  "api_sites": [
+    {
+      "name": "Greenhouse - Top Companies",
+      "companies": [
+        "stripe", "airbnb", "shopify", "slack", 
+        "dropbox", "pinterest", "uber", "lyft", "square",
+        "github", "microsoft", "google", "meta", "netflix"
+      ],
+      "base_url": "https://boards-api.greenhouse.io/v1/boards",
+      "type": "greenhouse_api"
+    }
+  ],
+  
+  "resume_keywords": [
+    "system engineer",
+    "devops",
+    "cloud engineer",
+    "sre",
+    "site reliability engineer",
+    "platform engineer",
+    "infrastructure engineer",
+    "kubernetes",
+    "docker",
+    "terraform",
+    "ansible",
+    "puppet",
+    "chef",
+    "jenkins",
+    "gitlab ci",
+    "github actions",
+    "ci/cd",
+    "aws",
+    "azure",
+    "gcp",
+    "google cloud",
+    "amazon web services",
+    "microservices",
+    "containerization",
+    "orchestration",
+    "monitoring",
+    "observability",
+    "prometheus",
+    "grafana",
+    "elk stack",
+    "elasticsearch",
+    "logstash",
+    "kibana",
+    "splunk",
+    "datadog",
+    "new relic",
+    "pagerduty",
+    "incident response",
+    "disaster recovery",
+    "high availability",
+    "load balancing",
+    "auto scaling",
+    "infrastructure as code",
+    "configuration management",
+    "linux",
+    "unix",
+    "bash",
+    "shell scripting",
+    "python",
+    "golang",
+    "go",
+    "ruby",
+    "powershell",
+    "networking",
+    "security",
+    "compliance",
+    "automation",
+    "python",
+    "ruby",
+    "powershell"
+  ],
+  "location": {
+    "global": true,
+    "countries": ["US", "CA", "GB", "DE", "NL", "FR", "ES", "IT", "AU", "NZ"],
+    "cities": ["San Francisco", "New York", "Toronto", "London", "Berlin", "Amsterdam", "Paris", "Barcelona", "Sydney", "Melbourne"],
+    "remote": {
+      "accept": true,
+      "required": true,
+      "hybrid": true
+    },
+    "exclude_countries": []
+  },
+  "email": {
+    "enabled": false,
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587,
+    "username": "your-email@gmail.com",
+    "password": "your-app-password",
+    "to": "your-email@gmail.com",
+    "from": "your-email@gmail.com"
+  },
+  "min_relevance_score": 0.3,
+  "seen_jobs_path": "seen_jobs.json",
+  "resume_path": "resume.pdf"
+} 

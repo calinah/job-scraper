@@ -11,6 +11,9 @@ type Config struct {
 	// Sites to scrape for job listings
 	Sites []Site `json:"sites"`
 
+	// API sites to scrape for job listings
+	APISites []APISite `json:"api_sites"`
+
 	// Resume keywords or skills to match against
 	ResumeKeywords []string `json:"resume_keywords"`
 
@@ -36,6 +39,17 @@ type Site struct {
 	URL      string `json:"url"`
 	Type     string `json:"type"`     // "indeed", "linkedin", "glassdoor", etc.
 	Selector string `json:"selector"` // CSS selector for job listings
+}
+
+// APISite represents an API-based job site
+type APISite struct {
+	Name      string            `json:"name"`
+	URL       string            `json:"url"`
+	Type      string            `json:"type"`      // "api", "greenhouse_api", etc.
+	Method    string            `json:"method"`    // "GET", "POST", etc.
+	Params    map[string]string `json:"params"`    // Query parameters
+	Companies []string          `json:"companies"` // For greenhouse_api type
+	BaseURL   string            `json:"base_url"`  // For greenhouse_api type
 }
 
 // LocationConfig represents location filtering settings

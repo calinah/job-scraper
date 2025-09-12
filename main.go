@@ -22,36 +22,60 @@ func main() {
 
 	// Create scraper
 	jobScraper := scraper.NewJobScraper()
-
-	// Test scraping one site
 	ctx := context.Background()
-	result, err := jobScraper.ScrapeSite(ctx, cfg.Sites[0])
-	if err != nil {
-		log.Printf("Error scraping %s: %v", cfg.Sites[0].Name, err)
-	} else {
-		fmt.Printf("Scraped %s: Found %d jobs in %v\n", result.Site, len(result.Jobs), result.Duration)
 
-		// Print first few jobs
-		for i, job := range result.Jobs {
-			if i >= 3 { // Only show first 3 jobs
-				break
+	// Scrape regular sites
+	fmt.Println("=== Scraping Regular Sites ===")
+	regularResults, err := jobScraper.ScrapeAllSites(ctx, cfg.Sites)
+	if err != nil {
+		log.Printf("Error scraping regular sites: %v", err)
+	}
+
+	// Scrape API sites
+	fmt.Println("\n=== Scraping API Sites ===")
+	apiResults, err := jobScraper.ScrapeAllAPISites(ctx, cfg.APISites)
+	if err != nil {
+		log.Printf("Error scraping API sites: %v", err)
+	}
+
+	// Combine all results
+	allResults := append(regularResults, apiResults...)
+
+	// Print summary
+	totalJobs := 0
+	for _, result := range allResults {
+		fmt.Printf("Scraped %s: Found %d jobs in %v\n", result.Site, len(result.Jobs), result.Duration)
+		totalJobs += len(result.Jobs)
+	}
+	fmt.Printf("\nTotal jobs found: %d\n", totalJobs)
+
+	// Print sample jobs from each source
+	for _, result := range allResults {
+		if len(result.Jobs) > 0 {
+			fmt.Printf("\n--- Sample jobs from %s ---\n", result.Site)
+			for i, job := range result.Jobs {
+				if i >= 3 { // Only show first 3 jobs per source
+					break
+				}
+				fmt.Printf("Job %d: %s at %s (%s)\n", i+1, job.Title, job.Company, job.Location)
 			}
-			fmt.Printf("Job %d: %s at %s\n", i+1, job.Title, job.Company)
 		}
 	}
 
 	// Save results to YAML file
-	filename := fmt.Sprintf("jobs_%s_%s.yaml", result.Site, time.Now().Format("2006-01-02_15-04-05"))
-	err = saveResultsToYAML(result, filename)
-	if err != nil {
-		log.Printf("Error saving results to file: %v", err)
-	} else {
-		fmt.Printf("\nResults saved to: %s\n", filename)
+	if len(allResults) > 0 {
+		filename := fmt.Sprintf("jobs_combined_%s.yaml", time.Now().Format("2006-01-02_15-04-05"))
+		err = saveAllResultsToYAML(allResults, filename)
+		if err != nil {
+			log.Printf("Error saving results to file: %v", err)
+		} else {
+			fmt.Printf("\nResults saved to: %s\n", filename)
+		}
 	}
 }
 
-// saveResultsToYAML saves scraping results to a YAML file
-func saveResultsToYAML(result *models.ScrapingResult, filename string) error {
+// saveAllResultsToYAML saves all scraping results to a YAML file
+func saveAllResultsToYAML(results []models.ScrapingResult, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create file %s: %w", filename, err)
@@ -61,7 +85,7 @@ func saveResultsToYAML(result *models.ScrapingResult, filename string) error {
 	encoder := yaml.NewEncoder(file)
 	encoder.SetIndent(2)
 
-	err = encoder.Encode(result)
+	err = encoder.Encode(results)
 	if err != nil {
 		return fmt.Errorf("failed to encode YAML: %w", err)
 	}
