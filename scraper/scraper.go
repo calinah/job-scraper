@@ -18,8 +18,14 @@ type Scraper interface {
 	// ScrapeSite scrapes a single site for job listings
 	ScrapeSite(ctx context.Context, site config.Site) (*models.ScrapingResult, error)
 
+	// ScrapeAPISite scrapes a single API site for job listings
+	ScrapeAPISite(ctx context.Context, apiSite config.APISite) (*models.ScrapingResult, error)
+
 	// ScrapeAllSites scrapes all configured sites
 	ScrapeAllSites(ctx context.Context, sites []config.Site) ([]models.ScrapingResult, error)
+
+	// ScrapeAllAPISites scrapes all configured API sites
+	ScrapeAllAPISites(ctx context.Context, apiSites []config.APISite) ([]models.ScrapingResult, error)
 }
 
 // JobScraper implements the Scraper interface
@@ -87,8 +93,11 @@ func (js *JobScraper) ScrapeSite(ctx context.Context, site config.Site) (*models
 		// Check if this is a remote job
 		isRemote := js.isRemoteJob(title, company, location, e.Text)
 
-		// Create job listing if we have at least a title and it's remote
-		if title != "" && isRemote {
+		// Check if this is a relevant role
+		isRelevantRole := js.isRelevantRole(title, e.Text)
+
+		// Create job listing if we have at least a title, it's remote, and it's a relevant role
+		if title != "" && isRemote && isRelevantRole {
 			job := models.JobListing{
 				ID:         fmt.Sprintf("%s-%d", site.Name, len(jobs)+1),
 				Title:      title,
@@ -186,6 +195,140 @@ func (js *JobScraper) isRemoteJob(title, company, location, fullText string) boo
 	return false
 }
 
+// isRelevantRole checks if a job title/description matches relevant engineering roles
+func (js *JobScraper) isRelevantRole(title, fullText string) bool {
+	// Convert to lowercase for case-insensitive matching
+	titleLower := strings.ToLower(title)
+	fullTextLower := strings.ToLower(fullText)
+
+	// Relevant role keywords
+	relevantKeywords := []string{
+		"system engineer",
+		"systems engineer",
+		"devops",
+		"dev ops",
+		"cloud engineer",
+		"sre",
+		"site reliability engineer",
+		"platform engineer",
+		"infrastructure engineer",
+		"reliability engineer",
+		"automation engineer",
+		"build engineer",
+		"release engineer",
+		"deployment engineer",
+		"kubernetes engineer",
+		"container engineer",
+		"aws engineer",
+		"azure engineer",
+		"gcp engineer",
+		"google cloud engineer",
+		"terraform engineer",
+		"ansible engineer",
+		"jenkins engineer",
+		"ci/cd engineer",
+		"monitoring engineer",
+		"observability engineer",
+		"security engineer",
+		"compliance engineer",
+		"network engineer",
+		"linux engineer",
+		"unix engineer",
+		"operations engineer",
+		"ops engineer",
+		"production engineer",
+		"backend engineer",
+		"api engineer",
+		"microservices engineer",
+		"distributed systems engineer",
+		"scalability engineer",
+		"performance engineer",
+		"data engineer",
+		"ml engineer",
+		"machine learning engineer",
+		"ai engineer",
+		"artificial intelligence engineer",
+	}
+
+	// Check if any relevant keywords appear in title or full text
+	for _, keyword := range relevantKeywords {
+		if strings.Contains(titleLower, keyword) ||
+			strings.Contains(fullTextLower, keyword) {
+			return true
+		}
+	}
+
+	// Check for specific technology keywords that indicate relevant roles
+	techKeywords := []string{
+		"kubernetes",
+		"docker",
+		"terraform",
+		"ansible",
+		"puppet",
+		"chef",
+		"jenkins",
+		"gitlab ci",
+		"github actions",
+		"aws",
+		"azure",
+		"gcp",
+		"google cloud",
+		"amazon web services",
+		"microservices",
+		"containerization",
+		"orchestration",
+		"monitoring",
+		"observability",
+		"prometheus",
+		"grafana",
+		"elk stack",
+		"elasticsearch",
+		"splunk",
+		"datadog",
+		"new relic",
+		"pagerduty",
+		"incident response",
+		"disaster recovery",
+		"high availability",
+		"load balancing",
+		"auto scaling",
+		"infrastructure as code",
+		"configuration management",
+		"linux",
+		"unix",
+		"bash",
+		"shell scripting",
+		"python",
+		"golang",
+		"go",
+		"ruby",
+		"powershell",
+		"networking",
+		"security",
+		"compliance",
+		"automation",
+	}
+
+	// Count how many tech keywords appear
+	techCount := 0
+	for _, keyword := range techKeywords {
+		if strings.Contains(titleLower, keyword) ||
+			strings.Contains(fullTextLower, keyword) {
+			techCount++
+		}
+	}
+
+	// If we find 2 or more tech keywords, it's likely a relevant role
+	return techCount >= 2
+}
+
+// ScrapeAPISite scrapes a single API site for job listings
+func (js *JobScraper) ScrapeAPISite(ctx context.Context, apiSite config.APISite) (*models.ScrapingResult, error) {
+	// Delegate to the API scraper
+	apiScraper := NewAPIScraper()
+	return apiScraper.ScrapeAPISite(ctx, apiSite)
+}
+
 // ScrapeAllSites scrapes all configured sites
 func (js *JobScraper) ScrapeAllSites(ctx context.Context, sites []config.Site) ([]models.ScrapingResult, error) {
 	var results []models.ScrapingResult
@@ -194,6 +337,21 @@ func (js *JobScraper) ScrapeAllSites(ctx context.Context, sites []config.Site) (
 		result, err := js.ScrapeSite(ctx, site)
 		if err != nil {
 			fmt.Printf("Error scraping %s: %v\n", site.Name, err)
+		}
+		results = append(results, *result)
+	}
+
+	return results, nil
+}
+
+// ScrapeAllAPISites scrapes all configured API sites
+func (js *JobScraper) ScrapeAllAPISites(ctx context.Context, apiSites []config.APISite) ([]models.ScrapingResult, error) {
+	var results []models.ScrapingResult
+
+	for _, apiSite := range apiSites {
+		result, err := js.ScrapeAPISite(ctx, apiSite)
+		if err != nil {
+			fmt.Printf("Error scraping API site %s: %v\n", apiSite.Name, err)
 		}
 		results = append(results, *result)
 	}
